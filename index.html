@@ -1,0 +1,613 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SlackScore Football</title>
+
+<style>
+:root {
+  --bg: #f1f4f8;
+  --card: #fff;
+  --text: #192434;
+  --muted: #758195;
+  --green: #087f50;
+  --line: #e5eaf0;
+  --dark: #102c25;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+header {
+  background: var(--dark);
+  color: white;
+  padding: 18px 16px;
+}
+
+.header-inner {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.logo span { color: #53e3a0; }
+
+.header-label {
+  color: #c8ded5;
+  font-size: 12px;
+}
+
+main {
+  max-width: 1100px;
+  padding: 18px 12px;
+  margin: auto;
+}
+
+.hero {
+  background: linear-gradient(120deg, #087f50, #104c3a);
+  color: white;
+  padding: 25px 20px;
+  border-radius: 16px;
+  margin-bottom: 18px;
+}
+
+.hero h1 {
+  margin: 0 0 8px;
+  font-size: 27px;
+}
+
+.hero p {
+  margin: 0;
+  color: #e0f6e9;
+  line-height: 1.5;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.stat {
+  background: #ffffff1c;
+  padding: 12px;
+  border-radius: 10px;
+}
+
+.stat strong {
+  display: block;
+  font-size: 21px;
+}
+
+.stat small {
+  color: #e0f6e9;
+  font-size: 11px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+input, select {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: white;
+  font-size: 14px;
+  color: var(--text);
+}
+
+input {
+  flex: 1;
+  min-width: 160px;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+}
+
+.tab {
+  border: 1px solid var(--line);
+  background: white;
+  padding: 10px 16px;
+  border-radius: 22px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.tab.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.section-title {
+  font-size: 19px;
+  margin: 15px 0;
+}
+
+.notice {
+  background: #fff8df;
+  color: #795b00;
+  border: 1px solid #f0e3ae;
+  padding: 12px;
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.league {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.league-heading {
+  background: #f9fbfc;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--line);
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: center;
+}
+
+.league-heading small {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 11px;
+}
+
+.match {
+  padding: 15px;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 75px minmax(0, 1fr) 55px;
+  gap: 12px;
+  align-items: center;
+}
+
+.match:last-child { border-bottom: none; }
+
+.match-time {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.status { font-weight: 700; }
+.status.live { color: #d93434; }
+.status.finished { color: var(--muted); }
+
+.teams {
+  display: grid;
+  gap: 11px;
+}
+
+.team {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  min-width: 0;
+}
+
+.team-name { overflow-wrap: anywhere; }
+
+.crest {
+  width: 27px;
+  height: 27px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #edf5ef;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+}
+
+.score {
+  text-align: right;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.9;
+}
+
+.score.upcoming {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.empty {
+  background: white;
+  text-align: center;
+  padding: 35px 15px;
+  border-radius: 12px;
+  color: var(--muted);
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 25px 12px;
+  font-size: 12px;
+}
+
+footer strong { color: var(--green); }
+
+@media (max-width: 480px) {
+  .logo { font-size: 20px; }
+
+  .header-label {
+    font-size: 10px;
+    text-align: right;
+  }
+
+  .hero h1 { font-size: 23px; }
+
+  .match {
+    grid-template-columns: 61px minmax(0, 1fr) 36px;
+    gap: 7px;
+    padding: 13px 9px;
+  }
+
+  .team {
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .crest {
+    width: 24px;
+    height: 24px;
+    font-size: 13px;
+  }
+
+  .score { font-size: 16px; }
+  .match-time { font-size: 10px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">⚽ Slack<span>Score</span></div>
+    <div class="header-label">YOUR FOOTBALL CENTER</div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Football lives here.</h1>
+    <p>Explore football scores, fixtures and major leagues in one place.</p>
+
+    <div class="stats">
+      <div class="stat">
+        <strong id="matchCount">0</strong>
+        <small>Matches shown</small>
+      </div>
+      <div class="stat">
+        <strong id="liveCount">0</strong>
+        <small>Sample live matches</small>
+      </div>
+      <div class="stat">
+        <strong id="leagueCount">0</strong>
+        <small>Leagues</small>
+      </div>
+    </div>
+  </section>
+
+  <div class="notice">
+    DEMO MODE: Match scores are examples, not verified live results.
+    No API, credit card, or backend is required.
+  </div>
+
+  <div class="toolbar">
+    <input
+      id="search"
+      type="search"
+      placeholder="Search a team or league..."
+      aria-label="Search teams and leagues"
+    >
+
+    <select id="leagueFilter" aria-label="Filter by league">
+      <option value="all">All leagues</option>
+    </select>
+  </div>
+
+  <nav class="tabs" aria-label="Match filters">
+    <button class="tab active" data-filter="all">All matches</button>
+    <button class="tab" data-filter="live">🔴 Live demo</button>
+    <button class="tab" data-filter="upcoming">Fixtures</button>
+    <button class="tab" data-filter="finished">Finished</button>
+  </nav>
+
+  <h2 class="section-title" id="sectionTitle">Football matches</h2>
+  <div id="matches"></div>
+</main>
+
+<footer>
+  <strong>SlackScore Football</strong>
+  <p>A football website built with HTML, CSS and JavaScript.</p>
+  <p>No API • No database • No backend required</p>
+</footer>
+
+<script>
+// SAMPLE MATCHES — EDIT THESE SCORES YOURSELF.
+
+const matches = [
+  {
+    league: "Premier League", country: "England",
+    home: "Arsenal", away: "Chelsea",
+    homeIcon: "🔴", awayIcon: "🔵",
+    homeScore: 2, awayScore: 1,
+    minute: "67'", status: "live"
+  },
+  {
+    league: "Premier League", country: "England",
+    home: "Liverpool", away: "Manchester City",
+    homeIcon: "🔴", awayIcon: "🩵",
+    homeScore: 1, awayScore: 1,
+    minute: "FT", status: "finished"
+  },
+  {
+    league: "Premier League", country: "England",
+    home: "Manchester United", away: "Tottenham",
+    homeIcon: "🔴", awayIcon: "⚪",
+    homeScore: null, awayScore: null,
+    minute: "18:00", status: "upcoming"
+  },
+  {
+    league: "La Liga", country: "Spain",
+    home: "Real Madrid", away: "Barcelona",
+    homeIcon: "⚪", awayIcon: "🔵",
+    homeScore: 2, awayScore: 2,
+    minute: "FT", status: "finished"
+  },
+  {
+    league: "La Liga", country: "Spain",
+    home: "Atletico Madrid", away: "Sevilla",
+    homeIcon: "🔴", awayIcon: "⚪",
+    homeScore: null, awayScore: null,
+    minute: "20:00", status: "upcoming"
+  },
+  {
+    league: "Serie A", country: "Italy",
+    home: "Inter Milan", away: "AC Milan",
+    homeIcon: "🔵", awayIcon: "🔴",
+    homeScore: 1, awayScore: 0,
+    minute: "54'", status: "live"
+  },
+  {
+    league: "Bundesliga", country: "Germany",
+    home: "Bayern Munich", away: "Borussia Dortmund",
+    homeIcon: "🔴", awayIcon: "🟡",
+    homeScore: null, awayScore: null,
+    minute: "19:30", status: "upcoming"
+  },
+  {
+    league: "Ligue 1", country: "France",
+    home: "PSG", away: "Marseille",
+    homeIcon: "🔵", awayIcon: "⚪",
+    homeScore: 3, awayScore: 0,
+    minute: "FT", status: "finished"
+  },
+  {
+    league: "African Football", country: "Africa",
+    home: "Liberia", away: "Ghana",
+    homeIcon: "🇱🇷", awayIcon: "🇬🇭",
+    homeScore: null, awayScore: null,
+    minute: "16:00", status: "upcoming"
+  },
+  {
+    league: "African Football", country: "Africa",
+    home: "Nigeria", away: "Ivory Coast",
+    homeIcon: "🇳🇬", awayIcon: "🇨🇮",
+    homeScore: 1, awayScore: 2,
+    minute: "FT", status: "finished"
+  }
+];
+
+let currentFilter = "all";
+
+const matchesContainer = document.getElementById("matches");
+const searchInput = document.getElementById("search");
+const leagueFilter = document.getElementById("leagueFilter");
+
+// Create league filter options.
+[...new Set(matches.map(match => match.league))].forEach(league => {
+  const option = document.createElement("option");
+  option.value = league;
+  option.textContent = league;
+  leagueFilter.appendChild(option);
+});
+
+function createMatchCard(match) {
+  const card = document.createElement("div");
+  card.className = "match";
+
+  const time = document.createElement("div");
+  time.className = "match-time";
+
+  const status = document.createElement("div");
+  status.className = "status";
+
+  if (match.status === "live") {
+    status.classList.add("live");
+    status.textContent = "● " + match.minute;
+  } else if (match.status === "finished") {
+    status.classList.add("finished");
+    status.textContent = "FT";
+  } else {
+    status.textContent = match.minute;
+  }
+
+  time.appendChild(status);
+
+  const teams = document.createElement("div");
+  teams.className = "teams";
+
+  function createTeam(name, icon) {
+    const team = document.createElement("div");
+    team.className = "team";
+
+    const crest = document.createElement("span");
+    crest.className = "crest";
+    crest.textContent = icon;
+
+    const label = document.createElement("span");
+    label.className = "team-name";
+    label.textContent = name;
+
+    team.append(crest, label);
+    return team;
+  }
+
+  teams.append(
+    createTeam(match.home, match.homeIcon),
+    createTeam(match.away, match.awayIcon)
+  );
+
+  const score = document.createElement("div");
+  score.className = "score";
+
+  if (match.status === "upcoming") {
+    score.classList.add("upcoming");
+    score.textContent = "VS";
+  } else {
+    score.textContent = match.homeScore + "\n" + match.awayScore;
+    score.style.whiteSpace = "pre-line";
+  }
+
+  card.append(time, teams, score);
+  return card;
+}
+
+function renderMatches() {
+  const query = searchInput.value.trim().toLowerCase();
+  const selectedLeague = leagueFilter.value;
+
+  const filtered = matches.filter(match => {
+    const statusOK =
+      currentFilter === "all" || match.status === currentFilter;
+
+    const leagueOK =
+      selectedLeague === "all" || match.league === selectedLeague;
+
+    const searchText = [
+      match.home, match.away, match.league, match.country
+    ].join(" ").toLowerCase();
+
+    return statusOK && leagueOK && searchText.includes(query);
+  });
+
+  matchesContainer.replaceChildren();
+
+  if (filtered.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No matches found. Try another search.";
+    matchesContainer.appendChild(empty);
+  } else {
+    const grouped = {};
+
+    filtered.forEach(match => {
+      if (!grouped[match.league]) grouped[match.league] = [];
+      grouped[match.league].push(match);
+    });
+
+    Object.entries(grouped).forEach(([leagueName, leagueMatches]) => {
+      const section = document.createElement("section");
+      section.className = "league";
+
+      const heading = document.createElement("div");
+      heading.className = "league-heading";
+
+      const title = document.createElement("span");
+      title.textContent = "🏆 " + leagueName;
+
+      const country = document.createElement("small");
+      country.textContent = leagueMatches[0].country;
+
+      heading.append(title, country);
+      section.appendChild(heading);
+
+      leagueMatches.forEach(match => {
+        section.appendChild(createMatchCard(match));
+      });
+
+      matchesContainer.appendChild(section);
+    });
+  }
+
+  document.getElementById("matchCount").textContent = filtered.length;
+
+  document.getElementById("liveCount").textContent =
+    filtered.filter(match => match.status === "live").length;
+
+  document.getElementById("leagueCount").textContent =
+    new Set(filtered.map(match => match.league)).size;
+
+  const titles = {
+    all: "Football matches",
+    live: "Live demo matches",
+    upcoming: "Upcoming fixtures",
+    finished: "Finished matches"
+  };
+
+  document.getElementById("sectionTitle").textContent =
+    titles[currentFilter];
+}
+
+// Match filter buttons.
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(tab => {
+      tab.classList.remove("active");
+    });
+
+    button.classList.add("active");
+    currentFilter = button.dataset.filter;
+    renderMatches();
+  });
+});
+
+// Search and league filters.
+searchInput.addEventListener("input", renderMatches);
+leagueFilter.addEventListener("change", renderMatches);
+
+// Display matches when the page loads.
+renderMatches();
+</script>
+
+</body>
+</html>
